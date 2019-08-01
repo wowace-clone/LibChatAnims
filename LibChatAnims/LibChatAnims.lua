@@ -1,10 +1,18 @@
 
-local MAJOR, MINOR = "LibChatAnims", 3 -- Bump minor on changes
+local MAJOR, MINOR = "LibChatAnims", 4 -- Bump minor on changes
 local LCA = LibStub:NewLibrary(MAJOR, MINOR)
 if not LCA then return end -- No upgrade needed
 
 LCA.animations = LCA.animations or {} -- Animation storage
+LCA.alerting = LCA.alerting or {} -- Chat tab alerting storage
 local anims = LCA.animations
+local alerting = LCA.alerting
+
+function LCA:IsAlerting(tab)
+	if alerting[tab] then
+		return true
+	end
+end
 
 ----------------------------------------------------
 -- Note, most of this code is simply replicated from
@@ -149,6 +157,7 @@ FCF_StartAlertFlash = function(chatFrame)
 		anims[chatFrame.minFrame]:SetLooping("REPEAT")
 		anims[chatFrame.minFrame]:Play()
 		--chatFrame.minFrame.alerting = true
+		alerting[chatFrame.minFrame] = true
 	end
 
 	if not anims[chatTab.glow] then
@@ -171,6 +180,7 @@ FCF_StartAlertFlash = function(chatFrame)
 	anims[chatTab.glow]:SetLooping("REPEAT")
 	anims[chatTab.glow]:Play()
 	--chatTab.alerting = true
+	alerting[chatTab] = true
 
 
 	-- START function FCFTab_UpdateAlpha(chatFrame)
@@ -201,6 +211,7 @@ FCF_StopAlertFlash = function(chatFrame)
 		end
 		chatFrame.minFrame.glow:Hide()
 		--chatFrame.minFrame.alerting = false
+		alerting[chatFrame.minFrame] = nil
 	end
 
 	if anims[chatTab.glow] then
@@ -208,6 +219,7 @@ FCF_StopAlertFlash = function(chatFrame)
 	end
 	chatTab.glow:Hide()
 	--chatTab.alerting = false
+	alerting[chatTab] = nil
 
 	-- START function FCFTab_UpdateAlpha(chatFrame)
 	local mouseOverAlpha, noMouseAlpha = 0, 0
